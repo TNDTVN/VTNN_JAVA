@@ -32,7 +32,8 @@ public class DashboardService {
 
     public Map<String, Long> getStats() {
         Map<String, Long> stats = new HashMap<>();
-        stats.put("totalOrders", orderRepository.count());
+        // Chỉ đếm các đơn hàng có isCancelled = false và có employeeID
+        stats.put("totalOrders", orderRepository.countByIsCancelledFalseAndEmployeeIDIsNotNull());
         stats.put("totalSuppliers", supplierRepository.count());
         stats.put("totalProducts", productRepository.count());
         stats.put("totalCustomers", customerRepository.count());
@@ -47,12 +48,14 @@ public class DashboardService {
     }
 
     public List<Object[]> getApprovedOrders(int year, int month) {
-        List<Object[]> orders = orderRepository.findApprovedOrdersWithEmployeeDetails(year, month);
+        // Lọc thêm điều kiện isCancelled = false
+        List<Object[]> orders = orderRepository.findApprovedOrdersWithEmployeeDetailsAndNotCancelled(year, month);
         return orders != null ? orders : Collections.emptyList();
     }
 
     public List<Object[]> getRevenueByMonth() {
-        List<Object[]> revenue = orderDetailRepository.findRevenueByMonth();
+        // Lọc các đơn hàng có isCancelled = false
+        List<Object[]> revenue = orderDetailRepository.findRevenueByMonthNotCancelled();
         return revenue != null ? revenue : Collections.emptyList();
     }
 }

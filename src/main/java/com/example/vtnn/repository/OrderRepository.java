@@ -10,20 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query(value = "SELECT e.firstname, e.lastname, e.email, " +
-            "(SELECT SUM(od.unitprice * od.quantity * (1 - od.discount)) " +
-            "FROM orderdetail od WHERE od.orderid = o.orderid) as totalPrice " +
-            "FROM ordertable o " +
-            "JOIN employee e ON o.employeeid = e.employeeid " +
-            "WHERE o.employeeid IS NOT NULL " +
-            "AND (:year = -1 OR EXTRACT(YEAR FROM o.orderdate) = :year) " +
-            "AND (:month = -1 OR EXTRACT(MONTH FROM o.orderdate) = :month) " +
-            "ORDER BY o.orderdate DESC", nativeQuery = true)
-    List<Object[]> findApprovedOrdersWithEmployeeDetails(
-            @Param("year") int year,
-            @Param("month") int month
-    );
-
     boolean existsByEmployeeEmployeeID(int employeeID);
     boolean existsByCustomerCustomerID(int customerID);
 
@@ -90,4 +76,16 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByCustomerCustomerIDAndIsCancelledFalse(int customerID);
     Page<Order> findByCustomerCustomerID(Integer customerID, Pageable pageable);
+    long countByIsCancelledFalseAndEmployeeIDIsNotNull();
+    @Query("SELECT e.firstName, e.lastName, e.email, " +
+            "COALESCE(SUM(od.unitPrice * od.quantity * (1 - od.discount)), 0) " +
+            "FROM Order o " +
+            "JOIN o.employee e " +
+            "LEFT JOIN o.orderDetails od " +
+            "WHERE o.employeeID IS NOT NULL " +
+            "AND o.isCancelled = false " +
+            "AND (:year = -1 OR YEAR(o.orderDate) = :year) " +
+            "AND (:month = -1 OR MONTH(o.orderDate) = :month) " +
+            "GROUP BY e.firstName, e.lastName, e.email, o.orderID")
+    List<Object[]> findApprovedOrdersWithEmployeeDetailsAndNotCancelled(int year, int month);
 }
