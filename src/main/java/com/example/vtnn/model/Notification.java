@@ -11,10 +11,10 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int notificationID;
-    @Column(name = "title")
+    @Column(name = "title", length = 1000)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content", length = 4000)
     private String content;
 
     @Column(name = "senderid")
