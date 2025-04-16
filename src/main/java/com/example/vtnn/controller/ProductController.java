@@ -1,5 +1,6 @@
 package com.example.vtnn.controller;
 
+import com.example.vtnn.DTO.ProductDTO;
 import com.example.vtnn.model.Product;
 import com.example.vtnn.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/add")
-    public Product addProduct(@RequestBody ProductRequest productRequest) {
+    public Product addProduct(@RequestBody ProductDTO.ProductRequest productRequest) {
         Product product = new Product(
                 productRequest.getProductName(),
                 productRequest.getCategoryID(),
@@ -34,41 +35,6 @@ public class ProductController {
         return productService.addProduct(product, productRequest.getImageNames());
     }
 
-    // ProductRequest DTO
-    public static class ProductRequest {
-        private String productName;
-        private int categoryID;
-        private int supplierID;
-        private String quantityPerUnit;
-        private BigDecimal unitPrice;
-        private int unitsInStock;
-        private int unitsOnOrder;
-        private boolean discontinued;
-        private String productDescription;
-        private List<String> imageNames;
-
-        // Getters, setters...
-        public String getProductName() { return productName; }
-        public void setProductName(String productName) { this.productName = productName; }
-        public int getCategoryID() { return categoryID; }
-        public void setCategoryID(int categoryID) { this.categoryID = categoryID; }
-        public int getSupplierID() { return supplierID; }
-        public void setSupplierID(int supplierID) { this.supplierID = supplierID; }
-        public String getQuantityPerUnit() { return quantityPerUnit; }
-        public void setQuantityPerUnit(String quantityPerUnit) { this.quantityPerUnit = quantityPerUnit; }
-        public BigDecimal getUnitPrice() { return unitPrice; }
-        public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
-        public int getUnitsInStock() { return unitsInStock; }
-        public void setUnitsInStock(int unitsInStock) { this.unitsInStock = unitsInStock; }
-        public int getUnitsOnOrder() { return unitsOnOrder; }
-        public void setUnitsOnOrder(int unitsOnOrder) { this.unitsOnOrder = unitsOnOrder; }
-        public boolean isDiscontinued() { return discontinued; }
-        public void setDiscontinued(boolean discontinued) { this.discontinued = discontinued; }
-        public String getProductDescription() { return productDescription; }
-        public void setProductDescription(String productDescription) { this.productDescription = productDescription; }
-        public List<String> getImageNames() { return imageNames; }
-        public void setImageNames(List<String> imageNames) { this.imageNames = imageNames; }
-    }
     @GetMapping
     public Page<Product> getProductsWithDetails(
             @RequestParam(defaultValue = "1") int page,
@@ -106,7 +72,7 @@ public class ProductController {
     @PutMapping("/update/{id}")
     public Product updateProduct(
             @PathVariable int id,
-            @RequestBody ProductRequest productRequest
+            @RequestBody ProductDTO.ProductRequest productRequest
     ) {
         logger.info("Received product: {}", productRequest.getProductName());
         logger.info("Image names: {}", productRequest.getImageNames());
