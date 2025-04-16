@@ -1,5 +1,6 @@
 package com.example.vtnn.controller;
 
+import com.example.vtnn.DTO.CustomerDTO;
 import com.example.vtnn.model.Customer;
 import com.example.vtnn.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -17,23 +18,23 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<Page<CustomerService.CustomerDTO>> getAllCustomers(
+    public ResponseEntity<Page<CustomerDTO>> getAllCustomers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "customerID,asc") String sort
     ) {
-        Page<CustomerService.CustomerDTO> customerDTOS = customerService.getAllCustomers(page, size, sort);
+        Page<CustomerDTO> customerDTOS = customerService.getAllCustomers(page, size, sort);
         return ResponseEntity.ok(customerDTOS);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<CustomerService.CustomerDTO>> searchCustomers(
+    public ResponseEntity<Page<CustomerDTO>> searchCustomers(
             @RequestParam("name") String name,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "customerID,asc") String sort
     ) {
-        Page<CustomerService.CustomerDTO> customers = customerService.searchCustomerByName(name, page, size, sort);
+        Page<CustomerDTO> customers = customerService.searchCustomerByName(name, page, size, sort);
         return ResponseEntity.ok(customers);
     }
 
@@ -43,16 +44,16 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerService.CustomerDTO> getCustomerById(@PathVariable("id") int id) {
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") int id) {
         Customer customer = customerService.getCustomerById(id);
         if (customer == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(new CustomerService.CustomerDTO(customer));
+        return ResponseEntity.ok(new CustomerDTO(customer));
     }
 
     @PostMapping
-    public ResponseEntity<?> createCustomer(@RequestBody CustomerService.CustomerCreateDTO customerDTO) {
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerDTO.CustomerCreateDTO customerDTO) {
         try {
             Customer savedCustomer = customerService.createCustomerFromDTO(customerDTO);
             return ResponseEntity.ok(savedCustomer);
@@ -116,7 +117,7 @@ public class CustomerController {
     @PutMapping("/profile/{customerID}")
     public ResponseEntity<?> updateCustomerProfile(
             @PathVariable int customerID,
-            @RequestBody CustomerUpdateRequest customerUpdateRequest
+            @RequestBody CustomerDTO.CustomerUpdateRequest customerUpdateRequest
     ) {
         try {
             Customer updatedCustomer = customerService.updateCustomer(
@@ -134,35 +135,5 @@ public class CustomerController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    // DTO cho yêu cầu cập nhật khách hàng
-    public static class CustomerUpdateRequest {
-        private String customerName;
-        private String contactName;
-        private String address;
-        private String city;
-        private String postalCode;
-        private String country;
-        private String phone;
-        private String email;
-
-        // Getters và Setters
-        public String getCustomerName() { return customerName; }
-        public void setCustomerName(String customerName) { this.customerName = customerName; }
-        public String getContactName() { return contactName; }
-        public void setContactName(String contactName) { this.contactName = contactName; }
-        public String getAddress() { return address; }
-        public void setAddress(String address) { this.address = address; }
-        public String getCity() { return city; }
-        public void setCity(String city) { this.city = city; }
-        public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-        public String getCountry() { return country; }
-        public void setCountry(String country) { this.country = country; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
     }
 }

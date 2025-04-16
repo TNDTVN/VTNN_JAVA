@@ -1,5 +1,6 @@
 package com.example.vtnn.service;
 
+import com.example.vtnn.DTO.SupplierDTO;
 import com.example.vtnn.model.Supplier;
 import com.example.vtnn.repository.ProductRepository;
 import com.example.vtnn.repository.SupplierRepository;
@@ -21,7 +22,7 @@ public class SupplierService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Supplier addSupplier(SupplierRequestDTO supplierDTO) {
+    public Supplier addSupplier(SupplierDTO.SupplierRequestDTO supplierDTO) {
         if (supplierDTO == null) {
             throw new IllegalArgumentException("Thông tin nhà cung cấp không được null");
         }
@@ -89,7 +90,7 @@ public class SupplierService {
         return supplierRepository.findAll();
     }
 
-    public Page<SupplierResponseDTO> getAllSuppliersInPage(int page, int size, String sort) {
+    public Page<SupplierDTO.SupplierResponseDTO> getAllSuppliersInPage(int page, int size, String sort) {
         String[] sortParts = sort.split(",");
         String sortField = sortParts[0];
         Sort.Direction sortDirection = sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1])
@@ -97,7 +98,7 @@ public class SupplierService {
                 : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortDirection, sortField));
-        return supplierRepository.findAll(pageable).map(SupplierResponseDTO::new);
+        return supplierRepository.findAll(pageable).map(SupplierDTO.SupplierResponseDTO::new);
     }
 
     public Supplier getSupplierById(int id) {
@@ -105,7 +106,7 @@ public class SupplierService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nhà cung cấp với ID: " + id));
     }
 
-    public Page<SupplierResponseDTO> searchSuppliers(String keyword, int page, int size, String sort) {
+    public Page<SupplierDTO.SupplierResponseDTO> searchSuppliers(String keyword, int page, int size, String sort) {
         String[] sortParts = sort.split(",");
         String sortField = sortParts[0];
         Sort.Direction sortDirection = sortParts.length > 1 && "desc".equalsIgnoreCase(sortParts[1])
@@ -114,83 +115,7 @@ public class SupplierService {
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortDirection, sortField));
         Page<Supplier> supplierPage = supplierRepository.findBySupplierNameContainingIgnoreCase(keyword, pageable);
-        return supplierPage.map(SupplierResponseDTO::new);
+        return supplierPage.map(SupplierDTO.SupplierResponseDTO::new);
     }
 
-    // DTO cho request
-    public static class SupplierRequestDTO {
-        private String supplierName;
-        private String contactName;
-        private String address;
-        private String city;
-        private String postalCode;
-        private String country;
-        private String phone;
-        private String email;
-
-        public SupplierRequestDTO() {}
-
-        public String getSupplierName() { return supplierName; }
-        public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
-        public String getContactName() { return contactName; }
-        public void setContactName(String contactName) { this.contactName = contactName; }
-        public String getAddress() { return address; }
-        public void setAddress(String address) { this.address = address; }
-        public String getCity() { return city; }
-        public void setCity(String city) { this.city = city; }
-        public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-        public String getCountry() { return country; }
-        public void setCountry(String country) { this.country = country; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-    }
-
-    // DTO cho response
-    public static class SupplierResponseDTO {
-        private int supplierID;
-        private String supplierName;
-        private String contactName;
-        private String address;
-        private String city;
-        private String postalCode;
-        private String country;
-        private String phone;
-        private String email;
-
-        public SupplierResponseDTO() {}
-
-        public SupplierResponseDTO(Supplier supplier) {
-            this.supplierID = supplier.getSupplierID();
-            this.supplierName = supplier.getSupplierName();
-            this.contactName = supplier.getContactName();
-            this.address = supplier.getAddress();
-            this.city = supplier.getCity();
-            this.postalCode = supplier.getPostalCode();
-            this.country = supplier.getCountry();
-            this.phone = supplier.getPhone();
-            this.email = supplier.getEmail();
-        }
-
-        public int getSupplierID() { return supplierID; }
-        public void setSupplierID(int supplierID) { this.supplierID = supplierID; }
-        public String getSupplierName() { return supplierName; }
-        public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
-        public String getContactName() { return contactName; }
-        public void setContactName(String contactName) { this.contactName = contactName; }
-        public String getAddress() { return address; }
-        public void setAddress(String address) { this.address = address; }
-        public String getCity() { return city; }
-        public void setCity(String city) { this.city = city; }
-        public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-        public String getCountry() { return country; }
-        public void setCountry(String country) { this.country = country; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-    }
 }

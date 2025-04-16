@@ -3,6 +3,8 @@ package com.example.vtnn.service;
 import com.example.vtnn.model.Category;
 import com.example.vtnn.repository.CategoryRepository;
 import com.example.vtnn.repository.ProductRepository;
+import com.example.vtnn.DTO.CategoryDTO.CategoryResponseDTO;
+import com.example.vtnn.DTO.CategoryDTO.CategoryRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -111,41 +113,5 @@ public class CategoryService {
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi lưu loại sản phẩm: " + e.getMessage(), e);
         }
-    }
-    // DTO cho request
-    public static class CategoryRequestDTO {
-        private String categoryName;
-        private String description;
-
-        // Constructor mặc định (yêu cầu bởi Jackson)
-        public CategoryRequestDTO() {}
-
-        public String getCategoryName() { return categoryName; }
-        public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-    }
-
-    // DTO cho response
-    public static class CategoryResponseDTO {
-        private int categoryID;
-        private String categoryName;
-        private String description;
-
-        // Constructor mặc định
-        public CategoryResponseDTO() {}
-
-        public CategoryResponseDTO(Category category) {
-            this.categoryID = category.getCategoryID();
-            this.categoryName = category.getCategoryName();
-            this.description = category.getDescription();
-        }
-
-        public int getCategoryID() { return categoryID; }
-        public void setCategoryID(int categoryID) { this.categoryID = categoryID; }
-        public String getCategoryName() { return categoryName; }
-        public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
     }
 }

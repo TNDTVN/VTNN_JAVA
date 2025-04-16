@@ -2,8 +2,8 @@ package com.example.vtnn.controller;
 
 import com.example.vtnn.model.Category;
 import com.example.vtnn.service.CategoryService;
-import com.example.vtnn.service.CategoryService.CategoryRequestDTO;
-import com.example.vtnn.service.CategoryService.CategoryResponseDTO;
+import com.example.vtnn.DTO.CategoryDTO.CategoryResponseDTO;
+import com.example.vtnn.DTO.CategoryDTO.CategoryRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

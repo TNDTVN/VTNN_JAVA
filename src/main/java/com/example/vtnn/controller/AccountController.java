@@ -1,5 +1,14 @@
 package com.example.vtnn.controller;
 
+import com.example.vtnn.DTO.AccountDTO.AccountRequest;
+import com.example.vtnn.DTO.AccountDTO;
+import com.example.vtnn.DTO.AccountDTO.LoginResponse;
+import com.example.vtnn.DTO.AccountDTO.LoginRequest;
+import com.example.vtnn.DTO.AccountDTO.AccountResponse;
+import com.example.vtnn.DTO.AccountDTO.RegisterRequest;
+import com.example.vtnn.DTO.AccountDTO.ChangePasswordRequest;
+import com.example.vtnn.DTO.AccountDTO.ForgotPasswordRequest;
+import com.example.vtnn.DTO.AccountDTO.ResetPasswordRequest;
 import com.example.vtnn.model.Account;
 import com.example.vtnn.repository.AccountRepository;
 import com.example.vtnn.service.AccountService;
@@ -118,12 +127,12 @@ public class AccountController {
         }
     }
     @GetMapping
-    public ResponseEntity<Page<AccountService.AccountDTO>> getAllAccounts(
+    public ResponseEntity<Page<AccountDTO>> getAllAccounts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size, // Đổi thành 5 để khớp với frontend
             @RequestParam(defaultValue = "accountID,asc") String sort // Mặc định asc
     ) {
-        Page<AccountService.AccountDTO> accounts = accountService.getAllAccounts(page, size, sort);
+        Page<AccountDTO> accounts = accountService.getAllAccounts(page, size, sort);
         return ResponseEntity.ok(accounts);
     }
 
@@ -141,127 +150,6 @@ public class AccountController {
     @GetMapping("/all")
     public List<Account> getAllAccounts() {
         return accountService.getAllAccountsNoPage();
-    }
-    // DTO cho request
-    public static class LoginRequest {
-        private String username;
-        private String password;
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    // DTO cho response
-    public static class LoginResponse {
-        private int accountID;
-        private String role;
-
-        public LoginResponse(int accountID, String role) {
-            this.accountID = accountID;
-            this.role = role;
-        }
-
-        public int getAccountID() {
-            return accountID;
-        }
-
-        public void setAccountID(int accountID) {
-            this.accountID = accountID;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
-    }
-
-    public static class AccountRequest {
-        private String username;
-        private String password;
-        private String email;
-        private String profileImage;
-        private String role;
-
-        // Getters and Setters
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getProfileImage() { return profileImage; }
-        public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
-        public String getRole() { return role; }
-        public void setRole(String role) { this.role = role; }
-    }
-
-    public static class AccountResponse {
-        private int accountID;
-        private String username;
-        private String role;
-
-        public AccountResponse(int accountID, String username, String role) {
-            this.accountID = accountID;
-            this.username = username;
-            this.role = role;
-        }
-
-        // Getters and Setters
-        public int getAccountID() { return accountID; }
-        public void setAccountID(int accountID) { this.accountID = accountID; }
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getRole() { return role; }
-        public void setRole(String role) { this.role = role; }
-    }
-
-    // DTO cho Change Password
-    public static class ChangePasswordRequest {
-        private int accountID;
-        private String oldPassword;
-        private String newPassword;
-
-        public int getAccountID() { return accountID; }
-        public void setAccountID(int accountID) { this.accountID = accountID; }
-        public String getOldPassword() { return oldPassword; }
-        public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
-        public String getNewPassword() { return newPassword; }
-        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
-    }
-
-    public static class RegisterRequest {
-        private String username;
-        private String password;
-        private String fullName;
-        private String phone;
-        private String email;
-
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
-        public String getFullName() { return fullName; }
-        public void setFullName(String fullName) { this.fullName = fullName; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
     }
 
     @PostMapping("/forgot-password")
@@ -286,29 +174,6 @@ public class AccountController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    public static class ForgotPasswordRequest {
-        private String username;
-        private String email;
-        private String phone;
-
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-    }
-
-    public static class ResetPasswordRequest {
-        private String token;
-        private String newPassword;
-
-        public String getToken() { return token; }
-        public void setToken(String token) { this.token = token; }
-        public String getNewPassword() { return newPassword; }
-        public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     }
 
     @GetMapping("/customer")

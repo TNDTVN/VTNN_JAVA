@@ -1,5 +1,6 @@
 package com.example.vtnn.controller;
 
+import com.example.vtnn.DTO.EmployeeDTO;
 import com.example.vtnn.model.Employee;
 import com.example.vtnn.service.EmployeeService;
 import org.springframework.data.domain.Page;
@@ -17,23 +18,23 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeService.EmployeeDTO>> getAllEmployees(
+    public ResponseEntity<Page<EmployeeDTO>> getAllEmployees(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "employeeID,asc") String sort
     ) {
-        Page<EmployeeService.EmployeeDTO> employeeDTOS = employeeService.getAllAccounts(page, size, sort);
+        Page<EmployeeDTO> employeeDTOS = employeeService.getAllAccounts(page, size, sort);
         return ResponseEntity.ok(employeeDTOS);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<EmployeeService.EmployeeDTO>> searchEmployees(
+    public ResponseEntity<Page<EmployeeDTO>> searchEmployees(
             @RequestParam("name") String name,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "employeeID,asc") String sort
     ) {
-        Page<EmployeeService.EmployeeDTO> employees = employeeService.searchEmployeeByName(name, page, size, sort);
+        Page<EmployeeDTO> employees = employeeService.searchEmployeeByName(name, page, size, sort);
         return ResponseEntity.ok(employees);
     }
 
@@ -43,16 +44,16 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeService.EmployeeDTO> getEmployeeById(@PathVariable("id") int id) {
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable("id") int id) {
         Employee employee = employeeService.getEmployeeById(id);
         if (employee == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(new EmployeeService.EmployeeDTO(employee));
+        return ResponseEntity.ok(new EmployeeDTO(employee));
     }
 
     @PostMapping
-    public ResponseEntity<?> createEmployee(@RequestBody EmployeeService.EmployeeCreateDTO employeeDTO) {
+    public ResponseEntity<?> createEmployee(@RequestBody EmployeeDTO.EmployeeCreateDTO employeeDTO) {
         try {
             Employee savedEmployee = employeeService.createEmployeeFromDTO(employeeDTO);
             return ResponseEntity.ok(savedEmployee);
@@ -111,7 +112,7 @@ public class EmployeeController {
     @PutMapping("/profile/{employeeID}")
     public ResponseEntity<?> updateEmployeeProfile(
             @PathVariable int employeeID,
-            @RequestBody EmployeeUpdateRequest employeeUpdateRequest
+            @RequestBody EmployeeDTO.EmployeeUpdateRequest employeeUpdateRequest
     ) {
         try {
             Employee updatedEmployee = employeeService.updateEmployee(
@@ -131,40 +132,5 @@ public class EmployeeController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
-
-    public static class EmployeeUpdateRequest {
-        private String firstName;
-        private String lastName;
-        private String birthDate; // ISO Date String (YYYY-MM-DD)
-        private String hireDate;  // ISO Date String (YYYY-MM-DD)
-        private String address;
-        private String city;
-        private String postalCode;
-        private String country;
-        private String phone;
-        private String email;
-
-        // Getters and Setters
-        public String getFirstName() { return firstName; }
-        public void setFirstName(String firstName) { this.firstName = firstName; }
-        public String getLastName() { return lastName; }
-        public void setLastName(String lastName) { this.lastName = lastName; }
-        public String getBirthDate() { return birthDate; }
-        public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
-        public String getHireDate() { return hireDate; }
-        public void setHireDate(String hireDate) { this.hireDate = hireDate; }
-        public String getAddress() { return address; }
-        public void setAddress(String address) { this.address = address; }
-        public String getCity() { return city; }
-        public void setCity(String city) { this.city = city; }
-        public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-        public String getCountry() { return country; }
-        public void setCountry(String country) { this.country = country; }
-        public String getPhone() { return phone; }
-        public void setPhone(String phone) { this.phone = phone; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
     }
 }

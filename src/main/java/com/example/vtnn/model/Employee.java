@@ -55,7 +55,7 @@ public class Employee {
     @Transient // Không lưu vào DB, dùng để nhận username từ frontend
     private String username;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<Order> orders;
 

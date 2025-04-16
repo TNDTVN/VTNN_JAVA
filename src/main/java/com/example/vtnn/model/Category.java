@@ -26,7 +26,7 @@ public class Category {
     public Category() {
     }
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<Product> products;
 

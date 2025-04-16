@@ -1,9 +1,8 @@
 package com.example.vtnn.controller;
 
+import com.example.vtnn.DTO.SupplierDTO;
 import com.example.vtnn.model.Supplier;
 import com.example.vtnn.service.SupplierService;
-import com.example.vtnn.service.SupplierService.SupplierRequestDTO;
-import com.example.vtnn.service.SupplierService.SupplierResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,7 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @PostMapping
-    public ResponseEntity<?> addSupplier(@RequestBody SupplierRequestDTO supplierDTO) {
+    public ResponseEntity<?> addSupplier(@RequestBody SupplierDTO.SupplierRequestDTO supplierDTO) {
         try {
             Supplier savedSupplier = supplierService.addSupplier(supplierDTO);
             return new ResponseEntity<>(savedSupplier, HttpStatus.CREATED);
@@ -60,28 +59,28 @@ public class SupplierController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<SupplierResponseDTO>> getSuppliersByPage(
+    public ResponseEntity<Page<SupplierDTO.SupplierResponseDTO>> getSuppliersByPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "supplierID,asc") String sort
     ) {
-        Page<SupplierResponseDTO> supplierDTOS = supplierService.getAllSuppliersInPage(page, size, sort);
+        Page<SupplierDTO.SupplierResponseDTO> supplierDTOS = supplierService.getAllSuppliersInPage(page, size, sort);
         return ResponseEntity.ok(supplierDTOS);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<SupplierResponseDTO>> searchSuppliers(
+    public ResponseEntity<Page<SupplierDTO.SupplierResponseDTO>> searchSuppliers(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "supplierID,asc") String sort
     ) {
-        Page<SupplierResponseDTO> suppliers = supplierService.searchSuppliers(keyword, page, size, sort);
+        Page<SupplierDTO.SupplierResponseDTO> suppliers = supplierService.searchSuppliers(keyword, page, size, sort);
         return ResponseEntity.ok(suppliers);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSupplier(@PathVariable int id, @RequestBody SupplierRequestDTO supplierDTO) {
+    public ResponseEntity<?> updateSupplier(@PathVariable int id, @RequestBody SupplierDTO.SupplierRequestDTO supplierDTO) {
         try {
             Supplier supplier = supplierService.getSupplierById(id);
             supplier.setSupplierName(supplierDTO.getSupplierName().trim());

@@ -40,7 +40,7 @@ public class Product {
     @Column(name = "productdescription")
     private String productDescription;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Image> images;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -53,7 +53,7 @@ public class Product {
     @JsonManagedReference
     private Supplier supplier;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<OrderDetail> orderDetails;
 

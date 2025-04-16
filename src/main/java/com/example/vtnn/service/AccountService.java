@@ -1,6 +1,7 @@
 package com.example.vtnn.service;
 
 import com.example.vtnn.model.Account;
+import com.example.vtnn.DTO.AccountDTO;
 import com.example.vtnn.model.Customer;
 import com.example.vtnn.model.Employee;
 import com.example.vtnn.model.Product;
@@ -278,74 +279,6 @@ public class AccountService {
         }
 
         return savedAccount;
-    }
-    // Inner class AccountDTO
-    public static class AccountDTO {
-        private int accountID;
-        private String username;
-        private String email;
-        private String role;
-        private boolean isLocked;
-        private String profileImage; // Thêm trường này
-
-        public AccountDTO(Account account) {
-            this.accountID = account.getAccountID();
-            this.username = account.getUsername();
-            this.email = account.getEmail();
-            this.role = account.getRole();
-            this.isLocked = account.isLocked();
-            this.profileImage = account.getProfileImage(); // Ánh xạ profileImage
-        }
-
-        // Getter và Setter cho profileImage
-        public String getProfileImage() {
-            return profileImage;
-        }
-
-        public void setProfileImage(String profileImage) {
-            this.profileImage = profileImage;
-        }
-
-        // Các getter/setter khác giữ nguyên
-        public boolean isLocked() {
-            return isLocked;
-        }
-
-        public void setLocked(boolean isLocked) {
-            this.isLocked = isLocked;
-        }
-
-        public int getAccountID() {
-            return accountID;
-        }
-
-        public void setAccountID(int accountID) {
-            this.accountID = accountID;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
     }
 
     public void forgotPassword(String username, String email, String phone) throws MessagingException {
