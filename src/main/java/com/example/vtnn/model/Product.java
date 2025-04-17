@@ -37,7 +37,7 @@ public class Product {
     @Column(name = "discontinued")
     private boolean discontinued;
 
-    @Column(name = "productdescription")
+    @Column(name = "productdescription", length = 4000)
     private String productDescription;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

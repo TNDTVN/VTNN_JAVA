@@ -4,6 +4,9 @@ import com.example.vtnn.model.Image;
 import com.example.vtnn.model.Product;
 import com.example.vtnn.repository.ImageRepository;
 import com.example.vtnn.repository.ProductRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +17,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -38,11 +44,11 @@ public class ProductService {
     private ImageRepository imageRepository;
     @Autowired
     private ImageService imageService;
+    @Transactional
     public Product updateProduct(int id, Product updatedProduct, List<String> newImageNames) {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Cập nhật các trường sản phẩm
         existingProduct.setProductName(updatedProduct.getProductName());
         existingProduct.setProductDescription(updatedProduct.getProductDescription());
         existingProduct.setUnitPrice(updatedProduct.getUnitPrice());
@@ -53,17 +59,25 @@ public class ProductService {
         existingProduct.setUnitsOnOrder(updatedProduct.getUnitsOnOrder());
         existingProduct.setDiscontinued(updatedProduct.isDiscontinued());
 
-        // Xử lý ảnh mới nếu có
-        if (newImageNames != null && !newImageNames.isEmpty()) {
-            // Xóa tất cả ảnh cũ
-            List<Image> existingImages = imageRepository.findAllByProductID(id);
-            for (Image image : existingImages) {
-                imageService.deleteImage(image.getImageName());
-                imageRepository.delete(image);
-            }
+        List<Image> existingImages = imageRepository.findAllByProductID(id);
+        List<String> existingImageNames = existingImages.stream()
+                .map(Image::getImageName)
+                .collect(Collectors.toList());
 
-            // Lưu tất cả ảnh mới
+        logger.info("Existing images: {}", existingImageNames);
+        logger.info("New image names: {}", newImageNames);
+
+        if (newImageNames != null && !newImageNames.isEmpty() && !newImageNames.equals(existingImageNames)) {
+            for (Image image : existingImages) {
+                logger.info("Deleting image file: {}", image.getImageName());
+                imageService.deleteImage(image.getImageName()); // Xóa ảnh vật lý
+            }
+            logger.info("Deleting all image records for productID: {}", id);
+            imageRepository.deleteAllByProductID(id);
+            imageRepository.flush();
+
             for (String imageName : newImageNames) {
+                logger.info("Saving new image: {}", imageName);
                 Image newImage = new Image(existingProduct.getProductID(), imageName);
                 imageRepository.save(newImage);
             }
@@ -75,17 +89,15 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Xóa tất cả ảnh liên quan đến sản phẩm
-        List<Image> existingImages = imageRepository.findAllByProductID(id); // Sửa repository để trả về List
+        List<Image> existingImages = imageRepository.findAllByProductID(id);
         for (Image image : existingImages) {
-            imageService.deleteImage(image.getImageName()); // Xóa ảnh vật lý
-            imageRepository.delete(image); // Xóa ảnh trong CSDL
+            imageService.deleteImage(image.getImageName());
+            imageRepository.delete(image);
         }
 
         productRepository.delete(existingProduct);
     }
 
-    // Phân trang cho tất cả sản phẩm
     public Page<Product> getAllProductsWithDetails(int page, int size, String sort) {
         String[] sortParts = sort.split(",");
         String sortField = sortParts[0];
@@ -111,7 +123,6 @@ public class ProductService {
     public Product addProduct(Product product, List<String> imageNames) {
         Product savedProduct = productRepository.save(product);
 
-        // Lưu tất cả ảnh
         if (imageNames != null && !imageNames.isEmpty()) {
             for (String imageName : imageNames) {
                 Image image = new Image(savedProduct.getProductID(), imageName);
@@ -130,10 +141,8 @@ public class ProductService {
                 : Sort.Direction.ASC;
         Sort sortObj = Sort.by(sortDirection, sortField);
 
-        // Tạo Pageable
         Pageable pageable = PageRequest.of(page - 1, size, sortObj);
 
-        // Tạo Specification
         Specification<Product> spec = Specification.where(null);
 
         if (categoryId != null) {
@@ -146,7 +155,6 @@ public class ProductService {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("unitPrice"), maxPrice));
         }
 
-        // Gọi findAll với Specification và Pageable
         return productRepository.findAll(spec, pageable);
     }
 }
