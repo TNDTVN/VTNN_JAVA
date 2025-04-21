@@ -52,7 +52,6 @@ public class CartItemsService {
         return cartItemsRepository.findByCustomerID(customerID);
     }
 
-    // Thêm sản phẩm vào giỏ hàng
     public CartItems addToCart(int accountID, int productID, int quantity) {
         int customerID = getCustomerIdFromAccountId(accountID);
 
@@ -62,6 +61,10 @@ public class CartItemsService {
         }
 
         Product product = productOptional.get();
+        if (product.isDiscontinued()) {
+            throw new RuntimeException("Sản phẩm đã ngừng kinh doanh!");
+        }
+
         if (quantity > product.getUnitsInStock()) {
             throw new RuntimeException("Số lượng sản phẩm không đủ trong kho!");
         }

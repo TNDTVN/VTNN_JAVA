@@ -67,19 +67,21 @@ public class ProductService {
         logger.info("Existing images: {}", existingImageNames);
         logger.info("New image names: {}", newImageNames);
 
-        if (newImageNames != null && !newImageNames.isEmpty() && !newImageNames.equals(existingImageNames)) {
-            for (Image image : existingImages) {
-                logger.info("Deleting image file: {}", image.getImageName());
-                imageService.deleteImage(image.getImageName()); // Xóa ảnh vật lý
-            }
-            logger.info("Deleting all image records for productID: {}", id);
-            imageRepository.deleteAllByProductID(id);
-            imageRepository.flush();
+        if (newImageNames != null && !newImageNames.isEmpty()) {
+            if (!newImageNames.equals(existingImageNames)) {
+                for (Image image : existingImages) {
+                    logger.info("Deleting image file: {}", image.getImageName());
+                    imageService.deleteImage(image.getImageName());
+                }
+                logger.info("Deleting all image records for productID: {}", id);
+                imageRepository.deleteAllByProductID(id);
+                imageRepository.flush();
 
-            for (String imageName : newImageNames) {
-                logger.info("Saving new image: {}", imageName);
-                Image newImage = new Image(existingProduct.getProductID(), imageName);
-                imageRepository.save(newImage);
+                for (String imageName : newImageNames) {
+                    logger.info("Saving new image: {}", imageName);
+                    Image newImage = new Image(existingProduct.getProductID(), imageName);
+                    imageRepository.save(newImage);
+                }
             }
         }
 
