@@ -38,7 +38,6 @@ public class OrderService {
     public Page<Order> getOrders(Pageable pageable, String role, Integer accountID, String sortField, Sort.Direction sortDirection) {
         logger.info("Sort field: {}, Direction: {}", sortField, sortDirection);
 
-        // Tạo Pageable không có Sort ban đầu
         Pageable pageableWithoutSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 
         if ("EMPLOYEE".equals(role) && accountID != null) {
@@ -202,6 +201,7 @@ public class OrderService {
 
             int newStock = product.getUnitsInStock() + detail.getQuantity();
             product.setUnitsInStock(newStock);
+            product.setUnitsOnOrder(product.getUnitsOnOrder() - detail.getQuantity());
             productRepository.save(product);
         }
 

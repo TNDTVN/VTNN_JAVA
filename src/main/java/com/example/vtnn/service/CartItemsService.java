@@ -78,7 +78,6 @@ public class CartItemsService {
                 throw new RuntimeException("Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho!");
             }
             cartItem.setQuantity(newQuantity);
-            product.setUnitsInStock(product.getUnitsInStock() - quantity);
         } else {
             cartItem = new CartItems();
             cartItem.setCustomerID(customerID);
@@ -87,7 +86,6 @@ public class CartItemsService {
             cartItem.setQuantity(quantity);
             cartItem.setUnitPrice(product.getUnitPrice());
             cartItem.setImageUrl(product.getImages().isEmpty() ? null : product.getImages().iterator().next().getImageName());
-            product.setUnitsInStock(product.getUnitsInStock() - quantity);
         }
         productRepository.save(product);
         return cartItemsRepository.save(cartItem);
@@ -218,6 +216,7 @@ public class CartItemsService {
 
             // Giảm tồn kho khi tạo hóa đơn
             product.setUnitsInStock(product.getUnitsInStock() - item.getQuantity());
+            product.setUnitsOnOrder(product.getUnitsOnOrder() + item.getQuantity());
             productRepository.save(product);
         }
 
