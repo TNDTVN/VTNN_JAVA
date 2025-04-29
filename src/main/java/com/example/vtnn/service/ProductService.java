@@ -134,8 +134,7 @@ public class ProductService {
 
         return savedProduct;
     }
-    public Page<Product> filterProducts(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, int page, int size, String sort) {
-        // Xử lý sort
+    public Page<Product> filterProducts(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String keyword, int page, int size, String sort) {
         String[] sortParts = sort.split(",");
         String sortField = sortParts[0];
         Sort.Direction sortDirection = sortParts.length > 1 && sortParts[1].equalsIgnoreCase("desc")
@@ -156,7 +155,20 @@ public class ProductService {
         if (maxPrice != null) {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("unitPrice"), maxPrice));
         }
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // Sử dụng từ khóa gốc, không chuẩn hóa
+            String searchKeyword = keyword.toLowerCase();
+            logger.info("Search keyword: {}", searchKeyword);
+            spec = spec.and((root, query, cb) ->
+                    cb.like(
+                            cb.function("LOWER", String.class, root.get("productName")),
+                            "%" + searchKeyword + "%"
+                    )
+            );
+        }
 
-        return productRepository.findAll(spec, pageable);
+        Page<Product> result = productRepository.findAll(spec, pageable);
+        logger.info("Found {} products for keyword: {}", result.getTotalElements(), keyword);
+        return result;
     }
 }

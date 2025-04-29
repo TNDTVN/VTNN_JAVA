@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,10 +103,14 @@ public class ProductController {
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "productID,asc") String sort
     ) {
-        return productService.filterProducts(categoryId, minPrice, maxPrice, page, size, sort);
+        logger.info("Received keyword (raw): {}", keyword);
+        String decodedKeyword = keyword != null ? URLDecoder.decode(keyword, StandardCharsets.UTF_8) : null;
+        logger.info("Decoded keyword: {}", decodedKeyword);
+        return productService.filterProducts(categoryId, minPrice, maxPrice, decodedKeyword, page, size, sort);
     }
 }

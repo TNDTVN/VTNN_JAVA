@@ -14,6 +14,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
     @EntityGraph(attributePaths = {"category", "supplier", "images"})
     @Query("SELECT DISTINCT p FROM Product p")
     Page<Product> findAllWithDetails(Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE LOWER(FUNCTION('unaccent', p.productName)) LIKE LOWER(CONCAT('%', ?1, '%'))")
     Page<Product> findByProductNameContainingIgnoreCase(String keyword, Pageable pageable);
     long countByCategoryID(int categoryID);
     long countBySupplierID(int supplierID);
