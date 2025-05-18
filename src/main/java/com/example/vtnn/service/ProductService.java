@@ -87,16 +87,24 @@ public class ProductService {
 
         return productRepository.save(existingProduct);
     }
+    @Transactional
     public void deleteProduct(int id) {
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
+        // Kiểm tra xem sản phẩm có thuộc đơn hàng nào không
+        if (existingProduct.getOrderDetails() != null && !existingProduct.getOrderDetails().isEmpty()) {
+            throw new RuntimeException("Không thể xóa sản phẩm vì sản phẩm đang thuộc đơn hàng");
+        }
+
+        // Xóa các hình ảnh liên quan
         List<Image> existingImages = imageRepository.findAllByProductID(id);
         for (Image image : existingImages) {
             imageService.deleteImage(image.getImageName());
             imageRepository.delete(image);
         }
 
+        // Xóa sản phẩm
         productRepository.delete(existingProduct);
     }
 

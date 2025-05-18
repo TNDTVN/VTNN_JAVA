@@ -5,6 +5,8 @@ import com.example.vtnn.model.Product;
 import com.example.vtnn.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -94,9 +96,14 @@ public class ProductController {
 
 
     @DeleteMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable int id) {
-        productService.deleteProduct(id);
-        return "Product and image deleted successfully";
+    public ResponseEntity<String> deleteProduct(@PathVariable int id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok("Sản phẩm và hình ảnh đã được xóa thành công");
+        } catch (RuntimeException e) {
+            logger.error("Lỗi khi xóa sản phẩm với ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
     @GetMapping("/filter")
     public Page<Product> filterProducts(
